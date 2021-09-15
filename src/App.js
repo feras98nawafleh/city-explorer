@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from 'axios';
+import Header from './Components/Header';
 import SearchForm from './Components/SearchForm';
 import LocationData from './Components/LocationData';
 import ErrorPage from './Components/ErrorPage';
@@ -17,7 +18,9 @@ export class App extends Component {
       showData: false,
       error: false,
       errorMessage: '',
-      weatherData: ''
+      weatherData: '',
+      movies: [],
+      showMovies: false,
     }
   }
   locationFinder = (e) => {
@@ -54,11 +57,38 @@ export class App extends Component {
           console.log(this.state.weatherData);
         });
     });
+
+    axios.get(
+      `https://feras-city-explorer-api.herokuapp.com/weather?latitude=${this.state.latitude}&longitude=${this.state.longitude}`
+    )
+    .then((res) => {
+      this.setState({
+        weatherData: res.data,
+      });
+    })
+    .catch((err) => {
+      this.setState({
+        error: err.message,
+        showError: true,
+      });
+    });
+
+  axios.get(
+      `https://feras-city-explorer-api.herokuapp.com/movies?place=${this.state.city}`
+    )
+    .then((res) => {
+      this.setState({
+        movieData: res.data,
+        showMovie:true
+      });
+      console.log(this.state.movieData)
+    });
   }
 
    render() {
      return (
        <>
+         <Header />
          {
            !this.state.error &&
            <SearchForm
@@ -88,7 +118,5 @@ export class App extends Component {
      )
    }
  }
-
-
  export default App;
 
